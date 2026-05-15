@@ -4,6 +4,7 @@ Features
 Add menu items
 View menu Items 
 Built with React Native and expo 
+Repository link: https://github.com/ST10447349/ChefMenuApp.git
 
 Screenshots:
 <img width="1170" height="2532" alt="IMG_9168" src="https://github.com/user-attachments/assets/1be0df3e-0916-43e3-b3b7-62daa05ddead" />

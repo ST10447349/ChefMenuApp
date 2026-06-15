@@ -1,120 +1,115 @@
-import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   Alert,
-  Button,
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View
 } from 'react-native';
 
-const router = useRouter();
-export default function AddMenuScreen ({
-  menuItems = [],
-  setMenuItems }) {
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
+export default function AddMenuScreen({ navigation }) {
   const [dishName, setDishName] = useState('');
-  const [description, setDescription] = useState('');
-  const [course, setCourse] = useState('Starter');
-  const [price, setPrice] = useState('');
+  const [courseType, setCourseType] = useState('');
+  const [dishPrice, setDishPrice] = useState('');
 
-  const addMenuItem = () => {
-
-    if (
-      dishName === '' ||
-      description === '' ||
-      price === ''
-    ) {
-      Alert.alert('Please complete all fields');
+  const handleSave = async () => {
+    if (!dishName || !courseType || !dishPrice) {
+      Alert.alert('Missing Info', 'Please fill in all fields before saving');
       return;
     }
 
-    const newItem = {
-      dishName,
-      description,
-      course,
-      price
-    };
+    try {
+      const existingData = await AsyncStorage.getItem('menu');
+      const menuList = existingData ? JSON.parse(existingData) : [];
 
-    setMenuItems([...menuItems, newItem]);
+      const newMenuItem = {
+        id: Date.now().toString(),
+        name: dishName,
+        course: courseType,
+        price: Number(dishPrice)
+      };
 
-    setDishName('');
-    setDescription('');
-    setPrice('');
+      menuList.push(newMenuItem);
 
-    Alert.alert('Menu item added successfully');
+      await AsyncStorage.setItem('menu', JSON.stringify(menuList));
 
-    router.back();
+      Alert.alert('Success', 'Menu item saved successfully');
+      setDishName('');
+      setCourseType('');
+      setDishPrice('');
+
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong while saving');
+    }
   };
 
   return (
     <View style={styles.container}>
-
-      <Text style={styles.heading}>
-        Add Menu Item
-      </Text>
+      <Text style={styles.title}>Add New Menu Item</Text>
 
       <TextInput
-        placeholder="Dish Name"
         style={styles.input}
+        placeholder="Dish Name"
         value={dishName}
         onChangeText={setDishName}
       />
 
       <TextInput
-        placeholder="Description"
         style={styles.input}
-        value={description}
-        onChangeText={setDescription}
+        placeholder="Course (Starter, Main, Dessert)"
+        value={courseType}
+        onChangeText={setCourseType}
       />
 
       <TextInput
-        placeholder="Course (Starter/Main/Dessert)"
         style={styles.input}
-        value={course}
-        onChangeText={setCourse}
-      />
-
-      <TextInput
         placeholder="Price"
-        style={styles.input}
-        value={price}
-        onChangeText={setPrice}
+        value={dishPrice}
         keyboardType="numeric"
+        onChangeText={setDishPrice}
       />
 
-      <Button
-        title="Add Item"
-        onPress={addMenuItem}
-      />
-
+      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <Text style={styles.saveButtonText}>Save Item</Text>
+      </TouchableOpacity>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
-
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    justifyContent: 'center'
   },
-
-  heading: {
-    fontSize: 28,
+  title: {
+    fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20
   },
-
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 10,
     padding: 12,
     marginBottom: 15,
+    borderRadius: 8,
+    fontSize: 16
+  },
+  saveButton: {
+    backgroundColor: '#4CAF50',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
     fontSize: 16
   }
 });

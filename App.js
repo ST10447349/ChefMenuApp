@@ -17,9 +17,10 @@ export default function App() {
         <Stack.Screen name="Home">
           {(props) => (
             <HomeScreen
-              {...props}
-              menuItems={menuItems}
-            />
+  {...props}
+  menuItems={menuItems}
+  setMenuItems={setMenuItems} 
+/>
           )}
         </Stack.Screen>
 

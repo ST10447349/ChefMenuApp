@@ -5,6 +5,6 @@ export default function ModalScreen () {
   const [menuItems, setMenuItems] = useState([]);
 
   return (
-    <AddMenuScreen menuItems={menuItems} setMenuItems={setMenuItems} />
+    <AddMenuScreen menuItems ={menuItems} setMenuItems={setMenuItems} />
   );
 }
